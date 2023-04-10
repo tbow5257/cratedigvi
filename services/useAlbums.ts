@@ -1,13 +1,23 @@
 import { useQuery } from "react-query";
-import { whippo_album } from "@prisma/client";
+import { AlbumsResponse } from "@/pages/api/albums";
+
+interface AlbumsQuery {
+  page?: number;
+  size?: number;
+}
 
 const API_URL = "/api/albums";
 
-const getAlbums = async () => {
-  if (!API_URL) {
-    throw new Error("could not find API BASE URL, check your config");
-  }
-  const res = await fetch(API_URL, {
+const getAlbums = async ({
+  page = 1,
+  size = 20,
+}: AlbumsQuery = {}): Promise<AlbumsResponse> => {
+  const queryParams = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+  });
+
+  const res = await fetch(`${API_URL}?${queryParams.toString()}`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -19,5 +29,5 @@ const getAlbums = async () => {
   return await res.json();
 };
 
-export const useAlbums = () =>
-  useQuery<whippo_album[], Error>("albums", getAlbums);
+export const useAlbums = (query?: AlbumsQuery) =>
+  useQuery<AlbumsResponse, Error>(["albums", query], () => getAlbums(query));

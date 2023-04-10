@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TableFooter,
+  TablePagination,
   TableRow,
   Paper,
   CircularProgress,
@@ -13,8 +15,18 @@ import {
 
 import { useAlbums } from "services/useAlbums";
 
-const AlbumsTable: React.FC = () => {
-  const { data, isLoading, error } = useAlbums();
+interface AlbumsTableProps {
+  defaultPage?: number;
+  defaultSize?: number;
+}
+
+const AlbumsTable: React.FC<AlbumsTableProps> = ({
+  defaultPage = 1,
+  defaultSize = 20,
+}) => {
+  const [page, setPage] = useState(defaultPage);
+  const [size, setSize] = useState(defaultSize);
+  const { data, isLoading, error } = useAlbums({ page, size });
 
   if (isLoading) {
     return <CircularProgress />;
@@ -27,6 +39,24 @@ const AlbumsTable: React.FC = () => {
       </Typography>
     );
   }
+
+  const { metadata, content } = data || {};
+  const { perPage, total, hasNextPage } = metadata || {};
+
+  const handlePageChange = (
+    _: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    const newPagePlusInitial = newPage + 1;
+    setPage(newPagePlusInitial);
+  };
+
+  const handleSizeChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setSize(parseInt(event.target.value));
+    setPage(1);
+  };
 
   return (
     <div>
@@ -44,7 +74,7 @@ const AlbumsTable: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.map((album) => (
+            {content?.map((album) => (
               <TableRow key={album.id}>
                 <TableCell>{album.releaseId}</TableCell>
                 <TableCell>
@@ -62,6 +92,27 @@ const AlbumsTable: React.FC = () => {
               </TableRow>
             ))}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[20, 50]}
+                colSpan={6}
+                count={total ?? 0}
+                rowsPerPage={perPage ?? 0}
+                page={page ? page - 1 : 0}
+                SelectProps={{
+                  inputProps: { "aria-label": "rows per page" },
+                  native: true,
+                }}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handleSizeChange}
+                labelRowsPerPage="Rows per page:"
+                nextIconButtonProps={{
+                  disabled: !hasNextPage,
+                }}
+              />
+            </TableRow>
+          </TableFooter>
         </Table>
       </TableContainer>
     </div>
