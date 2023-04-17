@@ -1,0 +1,15 @@
+/* TODO: implement proper loading state */
+.loadingOverlay {
+    display: grid;
+    place-items: center;
+    /* background-color: rgba(255, 255, 255, 0.8); */
+    position: absolute;
+    width: 100%;
+    height: calc(var(--row-height) * var(--row-count));
+    z-index: 10;
+  }
+
+  .tableBody {
+    position: relative;
+  }
+  

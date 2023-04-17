@@ -30,4 +30,6 @@ const getAlbums = async ({
 };
 
 export const useAlbums = (query?: AlbumsQuery) =>
-  useQuery<AlbumsResponse, Error>(["albums", query], () => getAlbums(query));
+  useQuery<AlbumsResponse, Error>(["albums", query], () => getAlbums(query), {
+    keepPreviousData: true,
+  });

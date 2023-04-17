@@ -26,7 +26,7 @@ const AlbumsTable: React.FC<AlbumsTableProps> = ({
 }) => {
   const [page, setPage] = useState(defaultPage);
   const [size, setSize] = useState(defaultSize);
-  const { data, isLoading, error } = useAlbums({ page, size });
+  const { data, isLoading, isFetching, error } = useAlbums({ page, size });
 
   if (isLoading) {
     return <CircularProgress />;
@@ -74,23 +74,37 @@ const AlbumsTable: React.FC<AlbumsTableProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {content?.map((album) => (
-              <TableRow key={album.id}>
-                <TableCell>{album.releaseId}</TableCell>
-                <TableCell>
-                  {album.name}
-                  {/* <NamePopper
-                      name={album.name}
-                      discogsURL={`https://www.discogs.com/${album.name}/release/${album.releaseId}`}
-                      youtubeURL={`https://www.youtube.com/results?search_query=${album.name}`}
-                    /> */}
-                </TableCell>
-                <TableCell>{album.want}</TableCell>
-                <TableCell>{album.have}</TableCell>
-                <TableCell>${Math.round(album.price / 100)}</TableCell>
-                <TableCell>{album.style}</TableCell>
-              </TableRow>
-            ))}
+            {isFetching ? (
+              <>
+                {Array.from({ length: size }, (_, i) => (
+                  <TableRow key={`loading-row-${i}`}>
+                    <TableCell colSpan={6} align="center">
+                      <CircularProgress />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            ) : (
+              <>
+                {content?.map((album) => (
+                  <TableRow key={album.id}>
+                    <TableCell>{album.releaseId}</TableCell>
+                    <TableCell>
+                      {album.name}
+                      {/* <NamePopper
+                        name={album.name}
+                        discogsURL={`https://www.discogs.com/${album.name}/release/${album.releaseId}`}
+                        youtubeURL={`https://www.youtube.com/results?search_query=${album.name}`}
+                      /> */}
+                    </TableCell>
+                    <TableCell>{album.want}</TableCell>
+                    <TableCell>{album.have}</TableCell>
+                    <TableCell>${Math.round(album.price / 100)}</TableCell>
+                    <TableCell>{album.style}</TableCell>
+                  </TableRow>
+                ))}
+              </>
+            )}
           </TableBody>
           <TableFooter>
             <TableRow>
