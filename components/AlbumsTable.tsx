@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 
 import { useAlbums } from "services/useAlbums";
+import styles from "@/styles/Albums.module.css";
 
 interface AlbumsTableProps {
   defaultPage?: number;
@@ -61,8 +62,8 @@ const AlbumsTable: React.FC<AlbumsTableProps> = ({
   return (
     <div>
       {/* <div>{style}</div> */}
-      <TableContainer component={Paper}>
-        <Table aria-label="albums table">
+      <TableContainer component={Paper} className={styles.tableBody}>
+        <Table aria-label="albums table" stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell>Release Id</TableCell>
@@ -90,12 +91,12 @@ const AlbumsTable: React.FC<AlbumsTableProps> = ({
                   <TableRow key={album.id}>
                     <TableCell>{album.releaseId}</TableCell>
                     <TableCell>
-                      {album.name}
+                      {decodeURIComponent(album.name)}
                       {/* <NamePopper
-                        name={album.name}
-                        discogsURL={`https://www.discogs.com/${album.name}/release/${album.releaseId}`}
-                        youtubeURL={`https://www.youtube.com/results?search_query=${album.name}`}
-                      /> */}
+              name={album.name}
+              discogsURL={`https://www.discogs.com/${album.name}/release/${album.releaseId}`}
+              youtubeURL={`https://www.youtube.com/results?search_query=${album.name}`}
+            /> */}
                     </TableCell>
                     <TableCell>{album.want}</TableCell>
                     <TableCell>{album.have}</TableCell>
@@ -107,28 +108,28 @@ const AlbumsTable: React.FC<AlbumsTableProps> = ({
             )}
           </TableBody>
           <TableFooter>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[20, 50]}
-                colSpan={6}
-                count={total ?? 0}
-                rowsPerPage={perPage ?? 0}
-                page={page ? page - 1 : 0}
-                SelectProps={{
-                  inputProps: { "aria-label": "rows per page" },
-                  native: true,
-                }}
-                onPageChange={handlePageChange}
-                onRowsPerPageChange={handleSizeChange}
-                labelRowsPerPage="Rows per page:"
-                nextIconButtonProps={{
-                  disabled: !hasNextPage,
-                }}
-              />
-            </TableRow>
+            <TableRow></TableRow>
           </TableFooter>
         </Table>
       </TableContainer>
+      <TablePagination
+        component={Paper}
+        rowsPerPageOptions={[20, 50]}
+        colSpan={6}
+        count={total ?? 0}
+        rowsPerPage={perPage ?? 0}
+        page={page ? page - 1 : 0}
+        SelectProps={{
+          inputProps: { "aria-label": "rows per page" },
+          native: true,
+        }}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleSizeChange}
+        labelRowsPerPage="Rows per page:"
+        nextIconButtonProps={{
+          disabled: !hasNextPage,
+        }}
+      />
     </div>
   );
 };
